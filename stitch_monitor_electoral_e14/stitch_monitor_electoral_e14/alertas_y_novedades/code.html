@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Centro de Alertas - Registraduría Nacional</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#410004",
+                        "surface-tint": "#335ab4",
+                        "secondary-fixed-dim": "#ffb3ae",
+                        "on-primary-fixed-variant": "#12419b",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#cca800",
+                        "secondary-fixed": "#ffdad7",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#88a7ff",
+                        "on-surface-variant": "#434652",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary-fixed": "#231b00",
+                        "on-secondary-fixed-variant": "#930015",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed-dim": "#ecc300",
+                        "on-primary-fixed": "#001849",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-container": "#4d3e00",
+                        "tertiary-fixed": "#ffe17b",
+                        "outline-variant": "#c4c6d4",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e7e8e9",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "surface-dim": "#d9dadb",
+                        "surface-container": "#edeeef",
+                        "inverse-primary": "#b3c5ff",
+                        "outline": "#747683",
+                        "background": "#f8f9fa",
+                        "tertiary": "#715c00",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1d",
+                        "on-surface": "#191c1d",
+                        "secondary-container": "#e12531",
+                        "primary-fixed": "#dae1ff",
+                        "on-tertiary-fixed-variant": "#554500",
+                        "primary": "#002465",
+                        "primary-container": "#003893",
+                        "inverse-surface": "#2e3132",
+                        "secondary": "#bb001e",
+                        "surface-container-highest": "#e1e3e4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "container-margin": "16px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "safe": "env(safe-area-inset-bottom, 16px)"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "display": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["22px", { "lineHeight": "30px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-[80px]"> <!-- Padding bottom for nav -->
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-headline-md text-headline-md-mobile full-width top-0 flat no shadows flex items-center justify-between px-container-margin h-16 w-full max-w-7xl mx-auto z-40 sticky">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a Colombian electoral witness wearing official credentials, set against a bright, modern white background with soft, neutral lighting. The image conveys authority and readiness. The color palette is restricted to natural skin tones, white, and subtle hints of official blue." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8VonV915rCZlrNjLyjbznDBMZu-VQQeGXY4DUTwiATJG2_o8GIhTNZ-lUqaxDGfHwPkiHXrpAU2mxp5IawRDlYpabGMs38MRdy8eo7vcOrjHfyWS6WKyuOl6EvqKQgevSRBfndSC913mPW7vcYvaSnt-nC8r7txXNsgSOHojkleZqWIaDSTgrNEX52-4Moj_IBKZWdyyxW_pBu0PgGnO631aW7WSOsbqnRgHeqGJV3xElYAtB41-M0w"/>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed-dim tracking-tight">Registraduría Nacional</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors active:opacity-80 text-primary">
+<span class="material-symbols-outlined" data-icon="notifications" data-weight="fill">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-7xl mx-auto px-container-margin py-md grid grid-cols-1 md:grid-cols-12 gap-gutter md:px-lg">
+<!-- Left Column: Feed & Alerts (Mobile: Full Width, Tablet/Desktop: 8 cols) -->
+<div class="md:col-span-8 flex flex-col gap-lg">
+<!-- Page Header / Intent -->
+<div class="flex flex-col gap-xs">
+<h1 class="font-display text-display text-on-surface">Centro de Alertas</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Monitoreo en tiempo real y reporte de novedades electorales.</p>
+</div>
+<!-- Urgent Notification Banner (Instrucciones) -->
+<div class="bg-primary-container rounded-xl p-md border border-primary-fixed-dim flex gap-sm items-start shadow-sm">
+<span class="material-symbols-outlined text-on-primary-container fill shrink-0 mt-xs" data-icon="campaign">campaign</span>
+<div class="flex flex-col gap-xs">
+<span class="font-label-bold text-label-bold text-on-primary-container uppercase tracking-wide">Instrucción Prioritaria</span>
+<p class="font-body-md text-body-md text-on-primary-container">Se requiere confirmación visual de la instalación de todas las mesas en la Zona 4 antes de las 07:30 AM. Utilice el módulo 'Mesas' para el reporte.</p>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim mt-1">Hace 15 min • Autoridad Electoral</span>
+</div>
+</div>
+<!-- Real-time Feed (Glassmorphism inspired card) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md flex flex-col gap-md">
+<div class="flex justify-between items-center border-b border-surface-variant pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface">Feed de Novedades</h2>
+<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span> En vivo
+                    </span>
+</div>
+<div class="flex flex-col gap-md">
+<!-- Feed Item 1: Alert -->
+<div class="flex gap-sm items-start relative pl-xl">
+<div class="absolute left-1 top-0 bottom-0 w-px bg-surface-variant"></div>
+<div class="absolute left-0 top-1 w-3 h-3 rounded-full bg-error ring-4 ring-surface-container-lowest"></div>
+<div class="bg-error-container rounded-lg p-sm flex-1 border border-secondary-fixed">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-bold text-label-bold text-on-error-container">Falta de Jurados</span>
+<span class="font-label-sm text-label-sm text-on-error-container opacity-80">08:15 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-error-container">Mesa 12, Zona Centro. Solo hay 2 jurados presentes. Se requiere apoyo inmediato.</p>
+<div class="mt-sm flex gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-lowest text-on-error-container font-label-sm text-label-sm border border-secondary-fixed">
+<span class="material-symbols-outlined text-[14px]" data-icon="report_problem">report_problem</span>
+                                    Alta Prioridad
+                                </span>
+</div>
+</div>
+</div>
+<!-- Feed Item 2: Update -->
+<div class="flex gap-sm items-start relative pl-xl">
+<div class="absolute left-1 top-0 bottom-0 w-px bg-surface-variant"></div>
+<div class="absolute left-0 top-1 w-3 h-3 rounded-full bg-tertiary-container ring-4 ring-surface-container-lowest"></div>
+<div class="bg-surface rounded-lg p-sm flex-1 border border-outline-variant">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-bold text-label-bold text-on-surface">Material Retrasado</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">07:45 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">El kit electoral para la Mesa 05 viene en camino, demora estimada 10 min.</p>
+<div class="mt-sm">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="pending">pending</span>
+                                    En Proceso
+                                </span>
+</div>
+</div>
+</div>
+<!-- Feed Item 3: Resolution -->
+<div class="flex gap-sm items-start relative pl-xl">
+<div class="absolute left-1 top-0 bottom-0 w-px bg-surface-variant"></div>
+<div class="absolute left-0 top-1 w-3 h-3 rounded-full bg-surface-tint ring-4 ring-surface-container-lowest"></div>
+<div class="bg-surface rounded-lg p-sm flex-1 border border-outline-variant">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-bold text-label-bold text-on-surface">Instalación Completa</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">07:30 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Todas las mesas de la Zona 4 han sido instaladas correctamente.</p>
+<div class="mt-sm">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                                    Resuelto
+                                </span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full py-sm border border-outline-variant rounded-lg font-label-bold text-label-bold text-primary hover:bg-surface-container-low transition-colors">
+                    Cargar más novedades
+                </button>
+</section>
+</div>
+<!-- Right Column: Actions & History (Mobile: Full Width, Tablet/Desktop: 4 cols) -->
+<div class="md:col-span-4 flex flex-col gap-lg">
+<!-- Quick Actions Bento Grid -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Categorías de Reporte</h3>
+<div class="grid grid-cols-2 gap-sm">
+<button class="bg-error text-on-error p-sm rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-on-error-container transition-colors shadow-sm active:scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="group_remove">group_remove</span>
+<span class="font-label-bold text-label-bold text-center">Falta Jurados</span>
+</button>
+<button class="bg-surface-container-high text-on-surface p-sm rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-surface-variant border border-outline-variant transition-colors active:scale-95 duration-100">
+<span class="material-symbols-outlined text-primary" data-icon="how_to_vote">how_to_vote</span>
+<span class="font-label-bold text-label-bold text-center">Presión Votante</span>
+</button>
+<button class="bg-surface-container-high text-on-surface p-sm rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-surface-variant border border-outline-variant transition-colors active:scale-95 duration-100">
+<span class="material-symbols-outlined text-primary" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-bold text-label-bold text-center">Material Faltante</span>
+</button>
+<button class="bg-surface-container-high text-on-surface p-sm rounded-lg flex flex-col items-center justify-center gap-2 hover:bg-surface-variant border border-outline-variant transition-colors active:scale-95 duration-100">
+<span class="material-symbols-outlined text-primary" data-icon="more_horiz">more_horiz</span>
+<span class="font-label-bold text-label-bold text-center">Otro Motivo</span>
+</button>
+</div>
+</div>
+<!-- Sent Alerts History -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md flex flex-col gap-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface">Mis Alertas Enviadas</h3>
+<div class="flex items-center justify-between p-sm border border-outline-variant rounded-lg bg-surface">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="group_remove">group_remove</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Falta de Jurado (M12)</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Hoy, 08:10 AM</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm border border-secondary-fixed">
+                        Pendiente
+                    </span>
+</div>
+<div class="flex items-center justify-between p-sm border border-outline-variant rounded-lg bg-surface opacity-75">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="inventory_2">inventory_2</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Marcadores (M10)</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Hoy, 07:15 AM</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm">
+                        Resuelto
+                    </span>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) - Highly contextual for Reporting -->
+<button class="fixed bottom-[88px] right-container-margin w-14 h-14 bg-error text-on-error rounded-xl shadow-md flex items-center justify-center hover:bg-on-error-container transition-colors z-40 md:hidden active:scale-95 duration-100 ring-2 ring-surface-container-lowest">
+<span class="material-symbols-outlined fill text-[28px]" data-icon="campaign">campaign</span>
+</button>
+<!-- Tablet/Desktop FAB equivalent -->
+<div class="hidden md:block fixed bottom-lg right-lg z-40">
+<button class="bg-error text-on-error px-lg py-sm rounded-xl shadow-md flex items-center justify-center gap-2 hover:bg-on-error-container transition-colors active:scale-95 duration-100 ring-2 ring-surface-container-lowest">
+<span class="material-symbols-outlined fill" data-icon="campaign">campaign</span>
+<span class="font-label-bold text-label-bold text-lg">Reportar Irregularidad</span>
+</button>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface-container-lowest dark:bg-surface-container text-primary dark:text-primary-fixed-dim font-label-sm text-label-sm font-headline-md text-headline-md text-primary fixed full-width bottom-0 z-50 shadow-md border-t-0 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-transform duration-100 rounded-lg p-1 w-16">
+<span class="material-symbols-outlined mb-1" data-icon="analytics">analytics</span>
+<span class="truncate w-full text-center">Estadísticas</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-transform duration-100 rounded-lg p-1 w-16">
+<span class="material-symbols-outlined mb-1" data-icon="table_chart">table_chart</span>
+<span class="truncate w-full text-center">Mesas</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-transform duration-100 rounded-lg p-1 w-16">
+<span class="material-symbols-outlined mb-1" data-icon="camera_alt">camera_alt</span>
+<span class="truncate w-full text-center">E-14</span>
+</button>
+<!-- Active Tab: Alertas -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform duration-100 w-20">
+<span class="material-symbols-outlined mb-1 fill" data-icon="report_problem">report_problem</span>
+<span class="truncate w-full text-center font-label-bold">Alertas</span>
+</button>
+</nav>
+</body></html>
