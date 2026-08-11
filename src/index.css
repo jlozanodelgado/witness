@@ -1,16 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Global CSS without Tailwind */
 
-@layer base {
-  body {
-    @apply bg-background text-on-background h-full;
-    font-family: 'Inter', sans-serif;
-  }
-  html {
-    @apply h-full;
-  }
-  #root {
-    @apply h-full;
-  }
+/* Ensure full height for layout */
+html, body, #root {
+  height: 100%;
+}
+
+/* Basic body styling */
+body {
+  background-color: var(--bg-background, #f5f5f5);
+  color: var(--text-on-background, #222222);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
 }
