@@ -1,4 +1,6 @@
-/* Global CSS without Tailwind */
+@import "tailwindcss";
+
+/* Global CSS */
 
 /* Ensure full height for layout */
 html, body, #root {
