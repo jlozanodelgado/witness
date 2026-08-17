@@ -15,6 +15,7 @@ export default function UserManagementPage() {
       return;
     }
     const { error } = await supabase.from('perfiles').insert({
+      id: crypto.randomUUID(),
       cedula: singleCedula,
       nombre_completo: singleNombreCompleto,
       rol: singleRole,
@@ -40,6 +41,7 @@ export default function UserManagementPage() {
       complete: async (results) => {
         const rows = results.data as Array<Record<string, any>>;
         const inserts = rows.map((row) => ({
+          id: crypto.randomUUID(),
           cedula: row.cedula?.trim(),
           nombre_completo: row.nombre_completo?.trim() || row.nombre?.trim(),
           rol: row.rol?.trim() ?? 'testigo',
