@@ -13,7 +13,7 @@ export default function ZoneManagementPage() {
       setStatus('Name is required');
       return;
     }
-    const { data, error } = await supabase.from('zonas_votacion').insert({
+    const { error } = await supabase.from('zonas_votacion').insert({
       nombre: singleName,
       direccion: singleAddress,
     });
@@ -41,14 +41,14 @@ export default function ZoneManagementPage() {
           nombre: row.nombre?.trim(),
           direccion: row.direccion?.trim(),
         }));
-        const { data, error } = await supabase.from('zonas_votacion').upsert(inserts, { onConflict: 'nombre' });
+        const { error } = await supabase.from('zonas_votacion').upsert(inserts, { onConflict: 'nombre' });
         if (error) {
           setStatus(`Bulk insert error: ${error.message}`);
         } else {
-          setStatus(`Inserted/updated ${data?.length ?? 0} zones`);
+          setStatus(`CSV processed. Check Supabase for accurate row count.`);
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         setStatus(`CSV parse error: ${err.message}`);
       },
     });
