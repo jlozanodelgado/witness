@@ -6,6 +6,7 @@ export default function ZoneManagementPage() {
   const [singleNombrePuesto, setSingleNombrePuesto] = useState('');
   const [singleDireccion, setSingleDireccion] = useState('');
   const [singleMunicipio, setSingleMunicipio] = useState('');
+  const [singleDepartamento, setSingleDepartamento] = useState('');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string>('');
 
@@ -18,6 +19,7 @@ export default function ZoneManagementPage() {
       nombre_puesto: singleNombrePuesto,
       direccion: singleDireccion,
       municipio: singleMunicipio,
+      departamento: singleDepartamento,
     });
     if (error) {
       setStatus(`Error: ${error.message}`);
@@ -26,6 +28,7 @@ export default function ZoneManagementPage() {
       setSingleNombrePuesto('');
       setSingleDireccion('');
       setSingleMunicipio('');
+      setSingleDepartamento('');
     }
   };
 
@@ -44,6 +47,7 @@ export default function ZoneManagementPage() {
           nombre_puesto: row.nombre_puesto?.trim() || row.nombre?.trim(),
           direccion: row.direccion?.trim(),
           municipio: row.municipio?.trim(),
+          departamento: row.departamento?.trim(),
         }));
         
         // Note: Assuming 'nombre_puesto' is unique if we use upsert. 
@@ -91,6 +95,13 @@ export default function ZoneManagementPage() {
               onChange={(e) => setSingleMunicipio(e.target.value)}
               className="input"
             />
+            <input
+              type="text"
+              placeholder="Departamento"
+              value={singleDepartamento}
+              onChange={(e) => setSingleDepartamento(e.target.value)}
+              className="input"
+            />
             <button onClick={handleSingleAdd} className="btn-primary mt-2">
               Agregar Zona
             </button>
@@ -102,7 +113,7 @@ export default function ZoneManagementPage() {
         <section>
           <h3 className="text-xl font-semibold mb-4">Carga Masiva de Zonas (CSV)</h3>
           <p className="text-sm text-gray-500 mb-2">
-            El archivo CSV debe contener las columnas: <strong>nombre_puesto, direccion, municipio</strong>
+            El archivo CSV debe contener las columnas: <strong>nombre_puesto, direccion, municipio, departamento</strong>
           </p>
           <div className="flex flex-col gap-4 max-w-sm">
             <input type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files?.[0] ?? null)} className="file:btn-primary file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:cursor-pointer" />
