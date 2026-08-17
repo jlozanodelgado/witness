@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseAdmin } from '../lib/supabase';
 import Papa from 'papaparse';
 
 export default function UserManagementPage() {
@@ -14,16 +14,39 @@ export default function UserManagementPage() {
       setStatus('Cédula and Nombre Completo are required');
       return;
     }
-    const { error } = await supabase.from('perfiles').insert({
-      id: crypto.randomUUID(),
+    
+    // Create user via Supabase Auth Admin API
+    const email = `${singleCedula}@civicguard.app`;
+    const password = singleCedula;
+    
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: email,
+      password: password,
+      email_confirm: true,
+      user_metadata: {
+        nombre_completo: singleNombreCompleto,
+        rol: singleRole,
+        cedula: singleCedula
+      }
+    });
+
+    if (authError) {
+      setStatus(`Auth Error: ${authError.message}`);
+      return;
+    }
+
+    // Insert into perfiles using the returned auth user ID
+    const { error: profileError } = await supabase.from('perfiles').insert({
+      id: authData.user.id,
       cedula: singleCedula,
       nombre_completo: singleNombreCompleto,
       rol: singleRole,
     });
-    if (error) {
-      setStatus(`Error: ${error.message}`);
+
+    if (profileError) {
+      setStatus(`Profile Error: ${profileError.message}`);
     } else {
-      setStatus('User added successfully');
+      setStatus('Usuario creado exitosamente');
       setSingleCedula('');
       setSingleNombreCompleto('');
     }
@@ -40,21 +63,46 @@ export default function UserManagementPage() {
       skipEmptyLines: true,
       complete: async (results) => {
         const rows = results.data as Array<Record<string, any>>;
-        const inserts = rows.map((row) => ({
-          id: crypto.randomUUID(),
-          cedula: row.cedula?.trim(),
-          nombre_completo: row.nombre_completo?.trim() || row.nombre?.trim(),
-          rol: row.rol?.trim() ?? 'testigo',
-        }));
-        
-        // Upsert by 'cedula' assuming it is unique in the DB.
-        // If cedula is not a unique constraint, this might just insert.
-        const { error } = await supabase.from('perfiles').upsert(inserts, { onConflict: 'cedula' });
-        if (error) {
-          setStatus(`Bulk insert error: ${error.message}`);
-        } else {
-          setStatus(`CSV processed successfully.`);
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (const row of rows) {
+          const cedula = row.cedula?.trim();
+          const nombre = row.nombre_completo?.trim() || row.nombre?.trim();
+          const rol = row.rol?.trim() ?? 'testigo';
+
+          if (!cedula) continue;
+
+          const email = `${cedula}@civicguard.app`;
+          const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+            email: email,
+            password: cedula,
+            email_confirm: true,
+            user_metadata: { nombre_completo: nombre, rol, cedula }
+          });
+
+          if (authError) {
+            console.error(`Error auth para ${cedula}:`, authError.message);
+            errorCount++;
+            continue;
+          }
+
+          const { error: profileError } = await supabase.from('perfiles').upsert({
+            id: authData.user.id,
+            cedula,
+            nombre_completo: nombre,
+            rol,
+          }, { onConflict: 'cedula' });
+
+          if (profileError) {
+            console.error(`Error perfil para ${cedula}:`, profileError.message);
+            errorCount++;
+          } else {
+            successCount++;
+          }
         }
+        
+        setStatus(`CSV Procesado: ${successCount} exitosos, ${errorCount} errores.`);
       },
       error: (err: any) => {
         setStatus(`CSV parse error: ${err.message}`);
