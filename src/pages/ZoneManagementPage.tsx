@@ -1,14 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import Papa from 'papaparse';
+
+interface Supervisor {
+  id: string;
+  nombre_completo: string;
+}
 
 export default function ZoneManagementPage() {
   const [singleNombrePuesto, setSingleNombrePuesto] = useState('');
   const [singleDireccion, setSingleDireccion] = useState('');
   const [singleMunicipio, setSingleMunicipio] = useState('');
   const [singleDepartamento, setSingleDepartamento] = useState('');
+  const [singleSupervisorId, setSingleSupervisorId] = useState('');
+  const [supervisores, setSupervisores] = useState<Supervisor[]>([]);
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string>('');
+
+  useEffect(() => {
+    fetchSupervisores();
+  }, []);
+
+  const fetchSupervisores = async () => {
+    const { data } = await supabase
+      .from('perfiles')
+      .select('id, nombre_completo')
+      .eq('rol', 'supervisor');
+    if (data) setSupervisores(data as Supervisor[]);
+  };
 
   const handleSingleAdd = async () => {
     if (!singleNombrePuesto) {
@@ -20,6 +39,7 @@ export default function ZoneManagementPage() {
       direccion: singleDireccion,
       municipio: singleMunicipio,
       departamento: singleDepartamento,
+      supervisor_id: singleSupervisorId || null,
     });
     if (error) {
       setStatus(`Error: ${error.message}`);
@@ -29,6 +49,7 @@ export default function ZoneManagementPage() {
       setSingleDireccion('');
       setSingleMunicipio('');
       setSingleDepartamento('');
+      setSingleSupervisorId('');
     }
   };
 
@@ -48,11 +69,9 @@ export default function ZoneManagementPage() {
           direccion: row.direccion?.trim(),
           municipio: row.municipio?.trim(),
           departamento: row.departamento?.trim(),
+          supervisor_id: row.supervisor_id?.trim() || null,
         }));
         
-        // Note: Assuming 'nombre_puesto' is unique if we use upsert. 
-        // Or if there is no unique constraint on it, we might just need to insert.
-        // If there's no unique constraint on 'nombre_puesto' in your DB, you may need to use insert() instead of upsert().
         const { error } = await supabase.from('zonas_votacion').insert(inserts);
         
         if (error) {
@@ -102,6 +121,16 @@ export default function ZoneManagementPage() {
               onChange={(e) => setSingleDepartamento(e.target.value)}
               className="input"
             />
+            <select
+              value={singleSupervisorId}
+              onChange={(e) => setSingleSupervisorId(e.target.value)}
+              className="input"
+            >
+              <option value="">-- Sin asignar (Opcional) --</option>
+              {supervisores.map((sup) => (
+                <option key={sup.id} value={sup.id}>{sup.nombre_completo}</option>
+              ))}
+            </select>
             <button onClick={handleSingleAdd} className="btn-primary mt-2">
               Agregar Zona
             </button>
@@ -113,7 +142,7 @@ export default function ZoneManagementPage() {
         <section>
           <h3 className="text-xl font-semibold mb-4">Carga Masiva de Zonas (CSV)</h3>
           <p className="text-sm text-gray-500 mb-2">
-            El archivo CSV debe contener las columnas: <strong>nombre_puesto, direccion, municipio, departamento</strong>
+            El archivo CSV debe contener las columnas: <strong>nombre_puesto, direccion, municipio, departamento, supervisor_id</strong> (opcional)
           </p>
           <div className="flex flex-col gap-4 max-w-sm">
             <input type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files?.[0] ?? null)} className="file:btn-primary file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:cursor-pointer" />

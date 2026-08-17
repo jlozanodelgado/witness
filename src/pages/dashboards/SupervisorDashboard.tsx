@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseAdmin } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface Testigo {
   id: string;
   nombre_completo: string;
   cedula: string;
+}
+
+interface Zona {
+  id: string;
+  nombre_puesto: string;
 }
 
 interface Mesa {
@@ -36,6 +41,20 @@ export default function SupervisorDashboard() {
   const [stats, setStats] = useState<Stats>({ testigos: 0, mesas: 0, votantes: 0, reportes: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  
+  // Data for forms
+  const [zonas, setZonas] = useState<Zona[]>([]);
+  const [testigosList, setTestigosList] = useState<Testigo[]>([]);
+
+  // Form states
+  const [formTestigoStatus, setFormTestigoStatus] = useState('');
+  const [testigoCedula, setTestigoCedula] = useState('');
+  const [testigoNombre, setTestigoNombre] = useState('');
+
+  const [formMesaStatus, setFormMesaStatus] = useState('');
+  const [mesaNumero, setMesaNumero] = useState('');
+  const [mesaZonaId, setMesaZonaId] = useState('');
+  const [mesaTestigoId, setMesaTestigoId] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -44,8 +63,14 @@ export default function SupervisorDashboard() {
 
   const fetchData = async () => {
     try {
-      // Fetch mesas assigned to this supervisor's testigos
-      // First get testigos under this supervisor
+      // 1. Fetch Zonas assigned to this supervisor
+      const { data: zonasData } = await supabase
+        .from('zonas_votacion')
+        .select('id, nombre_puesto')
+        .eq('supervisor_id', user!.id);
+      setZonas(zonasData || []);
+
+      // 2. Fetch Testigos assigned to this supervisor
       const { data: testigos, error: testigosError } = await supabase
         .from('perfiles')
         .select('id, nombre_completo, cedula')
@@ -55,37 +80,41 @@ export default function SupervisorDashboard() {
       if (testigosError) throw testigosError;
 
       const testigosData = (testigos ?? []) as Testigo[];
+      setTestigosList(testigosData);
       const testigoIds = testigosData.map((t) => t.id);
 
-      // Fetch mesas assigned to these testigos (or all in zone)
-      const mesasQuery = testigoIds.length > 0
+      // 3. Fetch Mesas assigned to these testigos OR in zones assigned to supervisor
+      // For simplicity, we just fetch mesas in the supervisor's zones
+      const zonaIds = (zonasData || []).map(z => z.id);
+      
+      const mesasQuery = zonaIds.length > 0
         ? supabase
             .from('mesas_votacion')
             .select('id, numero_mesa, testigo_asignado_id, zona_id, zonas_votacion(nombre_puesto, municipio)')
-            .in('testigo_asignado_id', testigoIds)
+            .in('zona_id', zonaIds)
         : supabase
             .from('mesas_votacion')
             .select('id, numero_mesa, testigo_asignado_id, zona_id, zonas_votacion(nombre_puesto, municipio)')
-            .limit(0); // no mesas if no testigos
+            .limit(0);
 
       const { data: mesasData, error: mesasError } = await mesasQuery;
       if (mesasError) throw mesasError;
 
       const mesaIds = (mesasData ?? []).map((m: any) => m.id);
 
-      // Fetch votantes counts per mesa
+      // 4. Fetch votantes counts
       const { data: votantes } = await supabase
         .from('votantes')
         .select('mesa_id, voto_registrado')
         .in('mesa_id', mesaIds.length > 0 ? mesaIds : ['00000000-0000-0000-0000-000000000000']);
 
-      // Fetch reportes per mesa
+      // 5. Fetch reportes
       const { data: reportes } = await supabase
         .from('reportes_mesa')
         .select('mesa_id')
         .in('mesa_id', mesaIds.length > 0 ? mesaIds : ['00000000-0000-0000-0000-000000000000']);
 
-      // Build enriched mesa list
+      // Build enriched list
       const enriched: Mesa[] = (mesasData ?? []).map((m: any) => {
         const mesaVotantes = (votantes ?? []).filter((v: any) => v.mesa_id === m.id);
         const testigo = testigosData.find((t) => t.id === m.testigo_asignado_id) ?? null;
@@ -112,6 +141,73 @@ export default function SupervisorDashboard() {
       console.error('Error cargando datos supervisor:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCrearTestigo = async () => {
+    if (!testigoCedula || !testigoNombre) {
+      setFormTestigoStatus('Cédula y Nombre son requeridos');
+      return;
+    }
+    
+    setFormTestigoStatus('Creando testigo...');
+    const email = `${testigoCedula}@civicguard.app`;
+    
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: email,
+      password: testigoCedula,
+      email_confirm: true,
+      user_metadata: {
+        nombre_completo: testigoNombre,
+        rol: 'testigo',
+        cedula: testigoCedula
+      }
+    });
+
+    if (authError) {
+      setFormTestigoStatus(`Auth Error: ${authError.message}`);
+      return;
+    }
+
+    const { error: profileError } = await supabase.from('perfiles').insert({
+      id: authData.user.id,
+      cedula: testigoCedula,
+      nombre_completo: testigoNombre,
+      rol: 'testigo',
+      supervisor_id: user!.id
+    });
+
+    if (profileError) {
+      setFormTestigoStatus(`Error Perfil: ${profileError.message}`);
+    } else {
+      setFormTestigoStatus('Testigo creado exitosamente');
+      setTestigoCedula('');
+      setTestigoNombre('');
+      fetchData(); // Refresh table
+    }
+  };
+
+  const handleCrearMesa = async () => {
+    if (!mesaNumero || !mesaZonaId) {
+      setFormMesaStatus('Número de mesa y Zona son requeridos');
+      return;
+    }
+
+    setFormMesaStatus('Creando mesa...');
+    const { error } = await supabase.from('mesas_votacion').insert({
+      numero_mesa: parseInt(mesaNumero),
+      zona_id: mesaZonaId,
+      testigo_asignado_id: mesaTestigoId || null
+    });
+
+    if (error) {
+      setFormMesaStatus(`Error: ${error.message}`);
+    } else {
+      setFormMesaStatus('Mesa creada exitosamente');
+      setMesaNumero('');
+      setMesaZonaId('');
+      setMesaTestigoId('');
+      fetchData(); // Refresh table
     }
   };
 
@@ -151,6 +247,58 @@ export default function SupervisorDashboard() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Management Forms */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+          
+          {/* Testigo Form */}
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+            <h3 className="text-xl font-bold mb-4 text-on-surface">Agregar Testigo</h3>
+            <div className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Cédula"
+                value={testigoCedula}
+                onChange={(e) => setTestigoCedula(e.target.value)}
+                className="input"
+              />
+              <input
+                type="text"
+                placeholder="Nombre Completo"
+                value={testigoNombre}
+                onChange={(e) => setTestigoNombre(e.target.value)}
+                className="input"
+              />
+              <button onClick={handleCrearTestigo} className="btn-primary mt-2">Crear Testigo</button>
+              {formTestigoStatus && <p className="text-sm mt-2 text-primary">{formTestigoStatus}</p>}
+            </div>
+          </div>
+
+          {/* Mesa Form */}
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+            <h3 className="text-xl font-bold mb-4 text-on-surface">Crear Mesa y Asignar</h3>
+            <div className="flex flex-col gap-4">
+              <input
+                type="number"
+                placeholder="Número de Mesa"
+                value={mesaNumero}
+                onChange={(e) => setMesaNumero(e.target.value)}
+                className="input"
+              />
+              <select value={mesaZonaId} onChange={(e) => setMesaZonaId(e.target.value)} className="input">
+                <option value="">-- Seleccionar Zona --</option>
+                {zonas.map(z => <option key={z.id} value={z.id}>{z.nombre_puesto}</option>)}
+              </select>
+              <select value={mesaTestigoId} onChange={(e) => setMesaTestigoId(e.target.value)} className="input">
+                <option value="">-- Asignar Testigo (Opcional) --</option>
+                {testigosList.map(t => <option key={t.id} value={t.id}>{t.nombre_completo}</option>)}
+              </select>
+              <button onClick={handleCrearMesa} className="btn-primary mt-2">Crear Mesa</button>
+              {formMesaStatus && <p className="text-sm mt-2 text-primary">{formMesaStatus}</p>}
+            </div>
+          </div>
+          
         </div>
 
         {/* Mesas Table */}
@@ -266,4 +414,3 @@ export default function SupervisorDashboard() {
     </DashboardLayout>
   );
 }
-
