@@ -50,7 +50,7 @@ export default function TestigoDashboard() {
         .maybeSingle();
 
       if (mesaError) throw mesaError;
-      setMesa(mesaData as MesaInfo | null);
+      setMesa(mesaData as unknown as MesaInfo | null);
 
       if (mesaData) {
         // Check if a reporte already exists for this mesa/testigo
