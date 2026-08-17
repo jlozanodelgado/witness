@@ -7,6 +7,8 @@ import DashboardRouter from './pages/dashboards/DashboardRouter';
 import SuperadminDashboard from './pages/dashboards/SuperadminDashboard';
 import SupervisorDashboard from './pages/dashboards/SupervisorDashboard';
 import TestigoDashboard from './pages/dashboards/TestigoDashboard';
+import UserManagementPage from './pages/UserManagementPage';
+import ZoneManagementPage from './pages/ZoneManagementPage';
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
             <Route path="/superadmin" element={<SuperadminDashboard />} />
+            <Route path="/superadmin/users" element={<UserManagementPage />} />
+            <Route path="/superadmin/zones" element={<ZoneManagementPage />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['supervisor']} />}>
