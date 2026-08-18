@@ -81,8 +81,6 @@ export default function SupervisorDashboard() {
 
       const testigosData = (testigos ?? []) as Testigo[];
       setTestigosList(testigosData);
-      const testigoIds = testigosData.map((t) => t.id);
-
       // 3. Fetch Mesas assigned to these testigos OR in zones assigned to supervisor
       // For simplicity, we just fetch mesas in the supervisor's zones
       const zonaIds = (zonasData || []).map(z => z.id);
